@@ -7,10 +7,11 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Click & Help">
 <meta name="theme-color" content="#14143C">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>(function(){try{if(window.navigator.standalone===true||matchMedia("(display-mode: standalone)").matches)document.documentElement.classList.add("standalone")}catch(e){}})();</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20100%20100%22%20width%3D%22512%22%20height%3D%22512%22%20role%3D%22img%22%20aria-label%3D%22Click%20%26amp%3B%20Help%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22chg%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%231F5BFF%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%238B4DFF%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20rx%3D%2224%22%20fill%3D%22url%28%23chg%29%22/%3E%3Cg%20transform%3D%22translate%280%20-2%29%22%3E%3Cpath%20d%3D%22M14%2076%20A11.5%2022%200%200%201%2037%2076%20A13%2028%200%200%201%2063%2076%20A11.5%2022%200%200%201%2086%2076%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%228%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3Ccircle%20cx%3D%2225.5%22%20cy%3D%2243%22%20r%3D%227.5%22%20fill%3D%22%23fff%22/%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2236%22%20r%3D%227.5%22%20fill%3D%22%23fff%22/%3E%3Ccircle%20cx%3D%2274.5%22%20cy%3D%2243%22%20r%3D%227.5%22%20fill%3D%22%23fff%22/%3E%3C/g%3E%3C/svg%3E">
 <title>Click &amp; Help Prototyp</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,6 +49,32 @@ h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.01em}
 .ios-hint{position:fixed;left:12px;right:12px;bottom:14px;z-index:60;background:#14143C;color:#fff;border-radius:16px;padding:12px 44px 12px 14px;font-size:14px;line-height:1.4;box-shadow:0 10px 30px rgba(0,0,0,.3)}
 .ios-hint b{color:#7CF2C6}
 .ios-hint button{position:absolute;right:8px;top:8px;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;font-size:17px}
+.app-only,.app-back{display:none}
+html.standalone,html.standalone body{height:100%;overflow:hidden;overscroll-behavior:none;background:var(--ink)}
+html.standalone body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+html.standalone input,html.standalone select{-webkit-user-select:text;user-select:text}
+html.standalone .pv-banner,html.standalone .top,html.standalone .explain,html.standalone .ios-hint{display:none!important}
+html.standalone main{padding:0!important;margin:0!important;max-width:none!important}
+html.standalone .student-wrap{display:block!important;margin:0!important;padding:0!important}
+html.standalone #phone{position:fixed!important;inset:0;width:100%!important;max-width:none!important;height:100%!important;margin:0!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+html.standalone .ph-head{padding-top:calc(env(safe-area-inset-top) + 14px)}
+html.standalone .tabbar{padding-bottom:calc(env(safe-area-inset-bottom) + 6px)}
+html.standalone .ph-body{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+html.standalone .app-only{display:inline-flex}
+html.standalone .ph-brand{gap:7px}
+html.standalone .ph-brand b{white-space:nowrap;font-size:16px}
+html.standalone .ph-brand .logo-mark{width:30px;height:30px}
+html.standalone .ph-roles,html.standalone .ph-bell,html.standalone .ph-brand #me-av .av{width:34px;height:34px}
+html.standalone .app-chip{align-items:center;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#C8BCFF;border:1px solid #3a3a72;padding:3px 8px;border-radius:999px;margin-left:2px}
+.ph-roles{margin-left:auto;width:36px;height:36px;border-radius:50%;background:var(--ink2);color:#C9C9E6;align-items:center;justify-content:center}
+html.standalone .ph-roles + .ph-bell{margin-left:0}
+html.standalone #v-org,html.standalone #v-uni,html.standalone #v-firma{height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--bg);padding:calc(env(safe-area-inset-top) + 64px) 14px calc(env(safe-area-inset-bottom) + 24px)!important}
+html.standalone .view.on:not(#v-student){position:fixed;inset:0}
+html.standalone .app-back{display:block;position:fixed;z-index:70;left:12px;top:calc(env(safe-area-inset-top) + 10px);background:var(--ink);color:#fff;font-weight:700;font-size:14px;padding:10px 14px;border-radius:999px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+html.standalone .app-back[hidden]{display:none}
+.role-pick{display:flex;flex-direction:column;gap:10px}
+.role-pick button{text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px;color:var(--ink)}
+.role-pick b{display:block;font-size:16px}.role-pick span{font-size:13px;color:var(--muted)}
 .pv-banner{display:flex;align-items:center;gap:10px;padding:9px 16px;background:linear-gradient(90deg,#1F5BFF,#8B4DFF);color:#fff;font-size:13.5px;line-height:1.35}
 .pv-banner b{flex:none;background:#fff;color:#4B33D6;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:999px}
 .pv-banner span{flex:1}
@@ -504,7 +531,7 @@ form.f-mdl{display:grid;gap:12px;margin-top:10px}
   <div class="student-wrap">
     <div class="phone" id="phone">
       <div class="ph-head">
-        <div class="ph-brand"><span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true"><g transform="translate(0 -2)"><path d="M14 76 A11.5 22 0 0 1 37 76 A13 28 0 0 1 63 76 A11.5 22 0 0 1 86 76" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="25.5" cy="43" r="7.5" fill="#fff"/><circle cx="50" cy="36" r="7.5" fill="#fff"/><circle cx="74.5" cy="43" r="7.5" fill="#fff"/></g></svg></span><b>Click &amp; Help</b><span class="ph-bell" aria-label="Benachrichtigungen"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21a2 2 0 0 0 4 0"/></svg><i class="dot"></i></span><span id="me-av"></span></div>
+        <div class="ph-brand"><span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true"><g transform="translate(0 -2)"><path d="M14 76 A11.5 22 0 0 1 37 76 A13 28 0 0 1 63 76 A11.5 22 0 0 1 86 76" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="25.5" cy="43" r="7.5" fill="#fff"/><circle cx="50" cy="36" r="7.5" fill="#fff"/><circle cx="74.5" cy="43" r="7.5" fill="#fff"/></g></svg></span><b>Click &amp; Help</b><span class="app-only app-chip">Vorschau</span><button type="button" class="app-only ph-roles" id="app-roles" aria-label="Ansicht wechseln"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg></button><span class="ph-bell" aria-label="Benachrichtigungen"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21a2 2 0 0 0 4 0"/></svg><i class="dot"></i></span><span id="me-av"></span></div>
         <div class="hi-row"><div><div class="hi">Hallo Lea 👋</div>
         <h2 id="ph-title">Wo hilfst du heute?</h2></div></div>
         <div class="hours-pill">Stundenkonto <b class="num" id="hp">7,0 h</b> · <b class="num" id="pp" style="color:#C8BCFF">120 P</b> · <span class="flame" aria-hidden="true">🔥</span> 4 Wochen</div>
@@ -1289,6 +1316,19 @@ try{seen=localStorage.getItem('ch-ioshint')==='1'}catch(e){}
 if(ios&&!standalone&&!seen){var h=document.getElementById('ios-hint');if(h)h.hidden=false}
 if(standalone){document.documentElement.classList.add('standalone')}
 if('serviceWorker' in navigator&&location.protocol==='https:'){try{navigator.serviceWorker.register('sw.js').catch(function(){})}catch(e){}}})();
+</script>
+<button type="button" class="app-back" id="app-back" hidden>← Zurück zur App</button>
+<script>
+(function(){var st=document.documentElement.classList.contains("standalone");
+ document.addEventListener("click",function(e){
+  if(e.target.closest("#app-roles")){openSheet('<h2 id="sheet-h" style="font-size:20px;margin-bottom:6px">Ansicht wechseln</h2><p style="color:var(--muted);font-size:14px;margin:0 0 14px">So sieht Click & Help für die anderen Beteiligten aus.</p><div class="role-pick">'+[["student","Helfende","Einsätze finden und Stunden sammeln"],["org","Verein","Anmeldungen sehen, Stunden bestätigen"],["uni","Hochschule","Engagement-Übersicht und Zertifikate"],["firma","Unternehmen","Challenges und Wirkung"]].map(function(r){return '<button type="button" data-pick="'+r[0]+'"><b>'+r[1]+'</b><span>'+r[2]+'</span></button>'}).join("")+'</div>',"Ansicht wechseln")}
+  var pk=e.target.closest("[data-pick]");if(pk){closeSheet();setRole(pk.dataset.pick);scrollTo(0,0);upd()}
+  if(e.target.closest("#app-back")){setRole("student");scrollTo(0,0);upd()}
+ });
+ function upd(){var b=document.getElementById("app-back");if(b)b.hidden=!(st&&typeof S!=="undefined"&&S.role!=="student")}
+ addEventListener("hashchange",upd);upd();
+ if(st){document.addEventListener("gesturestart",function(e){e.preventDefault()});}
+})();
 </script>
 </body>
 </html>
