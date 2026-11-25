@@ -33,6 +33,11 @@ h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.01em}
 .roles{display:flex;gap:4px;background:var(--ink2);padding:4px;border-radius:999px;flex-wrap:wrap}
 .roles button{background:transparent;color:#C9C9E6;padding:8px 14px;border-radius:999px;font-weight:600;font-size:14px}
 .roles button[aria-pressed="true"]{background:#fff;color:var(--ink)}
+.quals{display:flex;flex-direction:column;gap:8px}
+.qual{background:#fff;border-radius:14px;padding:10px 12px;border:1px solid var(--line)}
+.qual b{display:block;font-size:14px}.qual b span{color:var(--muted);font-weight:700;font-size:12px}
+.qual small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.qual.ok{border-color:#BDEBD7;background:#F1FBF6}.qual.wait{border-color:#F5DFB5;background:#FFF9EE}
 .pv-banner{display:flex;align-items:center;gap:10px;padding:9px 16px;background:linear-gradient(90deg,#1F5BFF,#8B4DFF);color:#fff;font-size:13.5px;line-height:1.35}
 .pv-banner b{flex:none;background:#fff;color:#4B33D6;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:999px}
 .pv-banner span{flex:1}
@@ -878,10 +883,23 @@ function jobCard(s){
     <div class="ava" style="background:${dk(COLORS[s.cat])}">${jicon(s)}</div>
     <div><h3>${esc(s.title)}</h3><div class="org">${esc(s.org)}</div>
       <div class="meta"><span>📅 ${esc(s.day)}, ${esc(s.time)}</span><span>📍 ${esc(s.dist)}</span></div>
-      <div class="tagrow"><span class="tag mint">+${fmtH(s.dur)} Nachweis</span><span class="tag">${esc(s.cat)}</span>${s.req?'<span class="tag amber">Führungszeugnis</span>':""}${mine?'<span class="tag amber">Angenommen</span>':''}<span class="slots num">${free>0?free+" frei":"voll"}</span></div>
+      <div class="tagrow"><span class="tag mint">+${fmtH(s.dur)} Nachweis</span><span class="tag">${esc(s.cat)}</span>${hasQual(s)?'<span class="tag mint">✓ Erfahrung</span>':""}${s.req?'<span class="tag amber">Führungszeugnis</span>':""}${mine?'<span class="tag amber">Angenommen</span>':''}<span class="slots num">${free>0?free+" frei":"voll"}</span></div>
       <div class="bar"><i style="width:${s.taken/s.slots*100}%"></i></div>
     </div></button>`;
 }
+/* ---------- Qualifikationen (dauerhaft gespeichert) ---------- */
+const QMAP={food:["Lebensmittel-Ausgabe","Hygiene-Einweisung"],book:["Nachhilfe & Lernbegleitung","Arbeit mit Kindern"],tree:["Pflanzen & Grünpflege"],flag:["Einlass & Ticketing","Event-Sicherheit"],coffee:["Seniorenbegleitung"],tag:["Event-Aufbau & Logistik"],paw:["Tierbetreuung"],heart:["Soziale Hilfe"]};
+function qualsFor(s){const q=[...(QMAP[jkey(s)]||QMAP.heart)];if(s.req)q.push(s.req);return q}
+const QKEY="ch-quals-v1";let Q={};
+function qSave(){try{localStorage.setItem(QKEY,JSON.stringify(Q))}catch(e){}}
+function qLoad(){try{const v=localStorage.getItem(QKEY);if(v){Q=JSON.parse(v)||{};return true}}catch(e){}return false}
+function qAdd(s,status,d0){const d=d0||new Date().toLocaleDateString("de-DE");qualsFor(s).forEach(n=>{const q=Q[n]||(Q[n]={status:"angemeldet",count:0,orgs:[],first:d});
+  if(!q.orgs.includes(s.org))q.orgs.push(s.org);q.last=d;if(status==="bestaetigt"){q.status="bestaetigt";q.count++}});qSave()}
+if(!qLoad()){[...S.history].reverse().forEach(h=>qAdd({title:h.title,org:h.org,cat:h.cat},"bestaetigt",h.date))}
+const hasQual=s=>qualsFor(s).some(n=>Q[n]&&Q[n].status==="bestaetigt");
+function qualHTML(){const e=Object.entries(Q).sort((a,b)=>(b[1].status==="bestaetigt")-(a[1].status==="bestaetigt")||b[1].count-a[1].count);
+  if(!e.length)return '<p class="empty">Nimm einen Einsatz an, dann erscheinen hier deine Qualifikationen.</p>';
+  return '<div class="quals">'+e.map(([n,q])=>`<div class="qual ${q.status==="bestaetigt"?"ok":"wait"}"><b>${q.status==="bestaetigt"?"✓":"⏳"} ${esc(n)}${q.count>1?` <span>×${q.count}</span>`:""}</b><small>${q.status==="bestaetigt"?"bestätigt":"angemeldet, wird nach dem Einsatz bestätigt"} · ${esc(q.orgs[0])}${q.orgs.length>1?` +${q.orgs.length-1}`:""} · seit ${esc(q.first)}</small></div>`).join("")+'</div>'}
 function renderStudent(){
   document.querySelectorAll(".tabbar button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.tab===S.tab));
   const hpEl=$("#hp"),ppEl=$("#pp");
@@ -971,7 +989,9 @@ function renderStudent(){
       <svg class="ring" viewBox="0 0 96 96"><circle cx="48" cy="48" r="40" fill="none" stroke="#2E2E6E" stroke-width="10"/><circle class="ring-fg" cx="48" cy="48" r="40" fill="none" stroke="#18C98F" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C*pct} ${C}" transform="rotate(-90 48 48)"/></svg>
       <div><small>Bestätigte Stunden</small><div class="big num">${fmtH(S.hours)}</div><small>${S.hours>=next[0]?"Level Gold erreicht":`Noch ${fmtH(next[0]-S.hours)} bis ${next[1]}`}</small></div></div>
       <div class="badges">${lv.map(l=>`<div class="badge ${S.hours>=l[0]?"":"off"}"><div class="ic" style="background:${l[2]}">${l[0]}</div>${l[1]}</div>`).join("")}</div>
-      <div class="sec-title">Nachweise</div>
+      <div class="sec-title">Meine Qualifikationen <span style="text-transform:none;letter-spacing:0;font-weight:600;color:#0B6B4C">· dauerhaft gespeichert</span></div>
+      ${qualHTML()}
+      <div class="sec-title" style="margin-top:18px">Nachweise</div>
       <div class="cert-row"><div><b>Engagement-Zertifikat WiSe 26/27</b><div style="font-size:13px;color:var(--muted)">${fmtH(S.hours)} · ${S.history.length} Einsätze · mit Prüfcode</div></div><button class="btn sm" data-cert>Ansehen</button></div>
       <div class="cert-row" style="margin-top:10px"><div><b>Auf LinkedIn teilen</b><div style="font-size:13px;color:var(--muted)">Nachweis als Ehrenamt eintragen</div></div><button class="btn ghost sm" data-share>Teilen</button></div>
       <div class="sec-title" style="margin-top:18px">Privatsphäre</div>
@@ -1049,7 +1069,7 @@ $("#phone").addEventListener("click",e=>{
       ${mine?'<button class="btn" disabled>Schon angenommen</button>':`<button class="btn" data-book="${s.id}" ${full?"disabled":""}>${full?"Leider voll":"Einsatz annehmen"}</button>`}`)}
   else if(t.dataset.book){const s=shift(+t.dataset.book),tok=SHEET_TOK;
     btnConfirm(t,"Angenommen",()=>{if(!sheetLive(tok)||S.my.some(m=>m.id===s.id))return;
-      s.taken++;S.my.push({id:s.id,status:"gebucht"});if(s.org==="Tafel Musterstadt e.V."){S.signups.unshift({name:"Lea M.",title:s.title,when:"gerade eben · "+s.day+", "+s.time,ini:"LM",fresh:true});S.orgNew++;const rb=document.querySelector('[data-role="org"]');if(rb)rb.innerHTML='Organisation<span class="rolebadge">'+S.orgNew+'</span>'}closeSheet();S.tab="my";renderStudent();step(1);toast(s.org==="Tafel Musterstadt e.V."?"Angenommen! Die Tafel hat deine Anmeldung sofort erhalten.":"Angenommen! Du bekommst 24 h vorher eine Erinnerung.")})}
+      s.taken++;S.my.push({id:s.id,status:"gebucht"});qAdd(s,"angemeldet");if(s.org==="Tafel Musterstadt e.V."){S.signups.unshift({name:"Lea M.",title:s.title,when:"gerade eben · "+s.day+", "+s.time,ini:"LM",fresh:true});S.orgNew++;const rb=document.querySelector('[data-role="org"]');if(rb)rb.innerHTML='Organisation<span class="rolebadge">'+S.orgNew+'</span>'}closeSheet();S.tab="my";renderStudent();step(1);toast(s.org==="Tafel Musterstadt e.V."?"Angenommen! Die Tafel hat deine Anmeldung sofort erhalten.":"Angenommen! Du bekommst 24 h vorher eine Erinnerung.")})}
   else if(t.dataset.cancel){const id=+t.dataset.cancel;shift(id).taken--;S.my=S.my.filter(m=>m.id!==id);renderStudent();toast("Abgesagt. Dein Platz ist wieder frei.")}
   else if(t.dataset.checkin){const id=+t.dataset.checkin;openSheet(`<h2 style="font-size:20px;text-align:center" id="sheet-h">QR-Code der Organisation</h2>${qrHTML()}<p class="scanline">Der Code wechselt alle 30 Sekunden, dazu wird kurz dein Standort geprüft.</p><button class="btn mint" data-doin="${id}">Scan simulieren</button>`)}
   else if(t.dataset.doin){const m=S.my.find(x=>x.id===+t.dataset.doin),tok=SHEET_TOK;
@@ -1112,7 +1132,7 @@ function showCert(){
       <tfoot><tr><td colspan="4">Summe der eingebrachten Stunden</td><td>${h1(total)} h</td></tr></tfoot>
     </table></div>
     <div class="c-h" style="margin-top:18px">Gezeigte Kompetenzen</div>
-    <div class="c-skills">${Object.keys(cats).filter(k=>SK[k]).map(k=>`<span>${SK[k]}</span>`).join("")}<span>Zuverlässigkeit (0 Absagen, 0 No-Shows)</span></div>
+    <div class="c-skills">${Object.entries(Q).filter(([n,q])=>q.status==="bestaetigt").map(([n])=>`<span>✓ ${esc(n)}</span>`).join("")}${Object.keys(cats).filter(k=>SK[k]).map(k=>`<span>${SK[k]}</span>`).join("")}<span>Zuverlässigkeit (0 Absagen, 0 No-Shows)</span></div>
     <div class="c-sign">
       <div class="c-sig"><svg viewBox="0 0 180 44"><path d="M6 32c10-18 18-24 22-16s-8 18-4 18 14-20 22-20-2 18 4 18 10-12 16-12 4 10 10 10 16-14 26-14 6 10 14 10 20-6 30-8" fill="none" stroke="#1E2A78" stroke-width="2" stroke-linecap="round"/></svg>
         <div><b>Dr. Anna Hoffmann</b><span>Leitung Engagement-Büro, Musteruni</span></div></div>
@@ -1155,7 +1175,7 @@ function renderOrg(){
   $("#org-shifts").innerHTML=mine.map(s=>`<div class="row"><div class="ava sm" style="background:${dk(COLORS[s.cat]||"#6A4CFF")}">${jicon(s)}</div><div class="grow"><b>${esc(s.title)}</b><span>${esc(s.day)}, ${esc(s.time)} · ${fmtH(s.dur)}</span></div><span class="num" style="font-weight:700;font-size:14px">${s.taken}/${s.slots}</span><div style="width:90px" class="bar"><i style="width:${s.taken/s.slots*100}%"></i></div></div>`).join("");
 }
 $("#org-confirm").onclick=e=>{const b=e.target.closest("[data-ok]");if(!b)return;const p=S.orgPending[+b.dataset.ok];p.done=true;
-  if(p.mid){const before=myRank(),hb=S.hours;const m=S.my.find(x=>x.id===p.mid);m.status="bestaetigt";S.hours+=p.h;const s=shift(m.id),pt=parseTime(s.time);S.history.unshift({title:s.title,org:s.org,h:s.dur,cat:s.cat,date:new Date().toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"numeric"}),from:pt?pt.from:"",to:pt?pt.to:"",by:"M. Yilmaz, Einsatzleitung"});step(3);const after=myRank();
+  if(p.mid){const before=myRank(),hb=S.hours;const m=S.my.find(x=>x.id===p.mid);m.status="bestaetigt";S.hours+=p.h;qAdd(shift(m.id),"bestaetigt");const s=shift(m.id),pt=parseTime(s.time);S.history.unshift({title:s.title,org:s.org,h:s.dur,cat:s.cat,date:new Date().toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"numeric"}),from:pt?pt.from:"",to:pt?pt.to:"",by:"M. Yilmaz, Einsatzleitung"});step(3);const after=myRank();
     S.celebrate={h:p.h,from:hb,to:S.hours,rb:before,ra:after,badge:LV.filter(l=>hb<l[0]&&S.hours>=l[0]).pop()||null,shown:false};
     if(S.role==="student")showHero();
     toast(after<before?`Bestätigt. Lea springt auf Platz ${after} unter ihren Freunden!`:"Bestätigt. Lea bekommt die Stunden gutgeschrieben.")}else toast("Stunden bestätigt.");
