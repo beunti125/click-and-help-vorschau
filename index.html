@@ -3,6 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="robots" content="noindex, nofollow">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Click & Help">
+<meta name="theme-color" content="#14143C">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20100%20100%22%20width%3D%22512%22%20height%3D%22512%22%20role%3D%22img%22%20aria-label%3D%22Click%20%26amp%3B%20Help%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22chg%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%231F5BFF%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%238B4DFF%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20rx%3D%2224%22%20fill%3D%22url%28%23chg%29%22/%3E%3Cg%20transform%3D%22translate%280%20-2%29%22%3E%3Cpath%20d%3D%22M14%2076%20A11.5%2022%200%200%201%2037%2076%20A13%2028%200%200%201%2063%2076%20A11.5%2022%200%200%201%2086%2076%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%228%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3Ccircle%20cx%3D%2225.5%22%20cy%3D%2243%22%20r%3D%227.5%22%20fill%3D%22%23fff%22/%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2236%22%20r%3D%227.5%22%20fill%3D%22%23fff%22/%3E%3Ccircle%20cx%3D%2274.5%22%20cy%3D%2243%22%20r%3D%227.5%22%20fill%3D%22%23fff%22/%3E%3C/g%3E%3C/svg%3E">
 <title>Click &amp; Help Prototyp</title>
@@ -38,6 +45,9 @@ h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.01em}
 .qual b{display:block;font-size:14px}.qual b span{color:var(--muted);font-weight:700;font-size:12px}
 .qual small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
 .qual.ok{border-color:#BDEBD7;background:#F1FBF6}.qual.wait{border-color:#F5DFB5;background:#FFF9EE}
+.ios-hint{position:fixed;left:12px;right:12px;bottom:14px;z-index:60;background:#14143C;color:#fff;border-radius:16px;padding:12px 44px 12px 14px;font-size:14px;line-height:1.4;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.ios-hint b{color:#7CF2C6}
+.ios-hint button{position:absolute;right:8px;top:8px;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;font-size:17px}
 .pv-banner{display:flex;align-items:center;gap:10px;padding:9px 16px;background:linear-gradient(90deg,#1F5BFF,#8B4DFF);color:#fff;font-size:13.5px;line-height:1.35}
 .pv-banner b{flex:none;background:#fff;color:#4B33D6;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:999px}
 .pv-banner span{flex:1}
@@ -1271,6 +1281,14 @@ function render(){if(S.role==="uni")renderEcts();({student:renderStudent,org:ren
 const setTopH=()=>document.documentElement.style.setProperty("--toph",$(".top").offsetHeight+"px");addEventListener("resize",setTopH);setTopH();
 MO.rank=myRank();MO.badges=new Set([10,25,50].filter(l=>S.hours>=l));
 setRole(location.hash.slice(1)||"student");
+</script>
+<div id="ios-hint" class="ios-hint" hidden><b>Als App aufs iPhone:</b> unten auf <span aria-label="Teilen">Teilen</span> tippen, dann „Zum Home-Bildschirm“.<button type="button" aria-label="Hinweis schließen" onclick="this.parentElement.remove();try{localStorage.setItem('ch-ioshint','1')}catch(e){}">×</button></div>
+<script>
+(function(){var ua=navigator.userAgent,ios=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1),standalone=window.navigator.standalone===true||matchMedia('(display-mode: standalone)').matches,seen=false;
+try{seen=localStorage.getItem('ch-ioshint')==='1'}catch(e){}
+if(ios&&!standalone&&!seen){var h=document.getElementById('ios-hint');if(h)h.hidden=false}
+if(standalone){document.documentElement.classList.add('standalone')}
+if('serviceWorker' in navigator&&location.protocol==='https:'){try{navigator.serviceWorker.register('sw.js').catch(function(){})}catch(e){}}})();
 </script>
 </body>
 </html>
